@@ -30,7 +30,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           ? { rejectUnauthorized: false }
           : false,
         synchronize: true,
-        autoLoadEntities: true,
+        autoLoadEntities: true, 
       }),
       inject: [ConfigService],
     }),
