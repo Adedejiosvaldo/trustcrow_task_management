@@ -16,8 +16,7 @@ export class TasksService {
 
   async createTask(body: CreateTaskDTO): Promise<Task> {
     try {
-      const task = await this.taskRepository.create(body);
-      return task;
+      return await this.taskRepository.create(body);
     } catch (error) {
       this.logger.error(`Failed to create task: ${error}`);
       if (error.code === '23505') {
@@ -38,6 +37,15 @@ export class TasksService {
     } catch (error) {
       this.logger.error(`Failed to fetch tasks: ${error}`);
       throw new InternalServerErrorException('Failed to fetch tasks');
+    }
+  }
+
+  async getTaskById(id: string): Promise<Task> {
+    try {
+      return await this.taskRepository.findOneById(id);
+    } catch (error) {
+      this.logger.error(`Failed to fetch task: ${error}`);
+      throw new InternalServerErrorException('Failed to fetch task');
     }
   }
 }

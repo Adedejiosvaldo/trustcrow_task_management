@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
@@ -19,7 +20,11 @@ export class TasksController {
   async createTask(@Body() body: CreateTaskDTO) {
     try {
       const task = await this.tasksService.createTask(body);
-      return task;
+      return {
+        status: 'success',
+        data: task,
+        errors: null,
+      };
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw new BadRequestException(error.message);
@@ -36,7 +41,12 @@ export class TasksController {
       if (!tasks.length) {
         return { message: 'No tasks found' };
       }
-      return tasks;
+      return {
+        status: 'success',
+        count: tasks.length,
+        data: tasks,
+        errors: null,
+      };
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw new BadRequestException(error.message);
@@ -45,4 +55,28 @@ export class TasksController {
       throw new BadRequestException('Failed to fetch tasks');
     }
   }
+
+  @Get(':id')
+  async getTaskById(@Param('id') id: string) {
+    try {
+      const task = await this.tasksService.getTaskById(id);
+      return {
+        status: 'success',
+        data: task,
+        errors: null,
+      };
+    } catch (error: unknown) {
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      }
+
+      throw new BadRequestException({
+        success: false,
+        message: 'Failed to fetch task',
+        error: error.message,
+      });
+    }
+  }
+
+
 }
