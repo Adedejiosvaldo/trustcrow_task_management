@@ -8,12 +8,6 @@ import { TaskRepository } from './entity/task.repository';
 @Module({
   imports: [TypeOrmModule.forFeature([Task])],
   controllers: [TasksController],
-  providers: [
-    TasksService,
-    {
-      provide: 'TASK_REPOSITORY',
-      useClass: TaskRepository,
-    },
-  ],
+  providers: [TasksService, TaskRepository],
 })
 export class TasksModule {}
