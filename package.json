@@ -1,7 +1,7 @@
 {
-  "name": "create",
+  "name": "trust-crow",
   "version": "0.0.1",
-  "description": "",
+  "description": "A Task Management application",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "joi": "^17.13.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
