@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TasksModule } from './tasks/tasks.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,10 +31,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           ? { rejectUnauthorized: false }
           : false,
         synchronize: true,
-        autoLoadEntities: true, 
+        autoLoadEntities: true,
       }),
       inject: [ConfigService],
     }),
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
