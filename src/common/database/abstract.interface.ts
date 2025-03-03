@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 
 export interface BaseInterfaceRepository<T> {
-  create(data: DeepPartial<T>): T;
+  create(data: DeepPartial<T>): Promise<T>;
   save(data: DeepPartial<T>): Promise<T>;
 
   findAll(options?: FindManyOptions<T>): Promise<T[]>;
