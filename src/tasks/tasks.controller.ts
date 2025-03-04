@@ -12,9 +12,11 @@ import {
   InternalServerErrorException,
   HttpException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDTO } from './dto/create-task.dto';
+import { UpdateTaskDTO } from './dto/update-task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -72,11 +74,12 @@ export class TasksController {
         errors: null,
       };
     } catch (error: unknown) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       if (error instanceof HttpException) {
         throw error;
       }
-
-      this.logger.error(`Error fetching task ${id}:`, error);
 
       throw new InternalServerErrorException(
         'An error occurred while retrieving the task',
@@ -87,7 +90,7 @@ export class TasksController {
   @Patch(':id')
   async updateTask(
     @Param('id') id: string,
-    @Body() updateTaskDto: any /* Replace 'any' with UpdateTaskDTO */,
+    @Body() updateTaskDto: UpdateTaskDTO,
   ) {
     try {
       const task = await this.tasksService.updateTask(id, updateTaskDto);

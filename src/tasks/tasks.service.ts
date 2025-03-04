@@ -1,8 +1,10 @@
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { TaskRepository } from './entity/task.repository';
 import { CreateTaskDTO } from './dto/create-task.dto';
@@ -43,22 +45,49 @@ export class TasksService {
 
   async getTaskById(id: string): Promise<Task> {
     try {
-      return await this.taskRepository.findOneById(id);
+      const task = await this.taskRepository.findOneById(id);
+      if (!task) {
+        throw new NotFoundException({
+          status: 'failed',
+          data: null,
+          error: `Task with ID ${id} not found`,
+        });
+      }
+      return task;
     } catch (error) {
       this.logger.error(`Failed to fetch task: ${error}`);
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Failed to fetch task');
     }
   }
 
   async updateTask(id: string, updateTaskDto: UpdateTaskDTO): Promise<Task> {
     try {
+      const existingTask = await this.taskRepository.findOneById(id);
+      if (!existingTask) {
+        throw new BadRequestException({
+          status: 'failed',
+          data: null,
+          error: `Task with ID ${id} not found`,
+        });
+      }
       const updatedTask = await this.taskRepository.update(id, updateTaskDto);
+
       if (!updatedTask) {
-        throw new BadRequestException(`Task with ID ${id} not found`);
+        throw new BadRequestException({
+          status: 'failed',
+          data: null,
+          error: `Task with ID ${id} not found`,
+        });
       }
       return updatedTask;
     } catch (error) {
       this.logger.error(`Failed to update task ${id}: ${error}`);
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Failed to update task');
     }
   }
@@ -68,7 +97,9 @@ export class TasksService {
       await this.taskRepository.delete(id);
     } catch (error) {
       this.logger.error(`Failed to delete task ${id}: ${error}`);
-      throw new InternalServerErrorException('Failed to delete task');
+      if (error instanceof HttpException) {
+        throw error;
+      }
     }
   }
 
@@ -83,6 +114,9 @@ export class TasksService {
       return updatedTask;
     } catch (error) {
       this.logger.error(`Failed to mark task as completed: ${error}`);
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new InternalServerErrorException(
         'Failed to mark task as completed',
       );

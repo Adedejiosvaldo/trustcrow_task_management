@@ -73,9 +73,15 @@ export abstract class BaseRepository<T extends HasId>
     return entity;
   }
 
-  public async update(id: string, data: Partial<T>): Promise<T | null> {
-    await this.entity.update(id, data as any);
-    return this.findOneById(id);
+  public async update(id: string, data: DeepPartial<T>): Promise<T> {
+    const existingEntity = await this.findOneById(id);
+
+    if (!existingEntity) {
+      throw new NotFoundException(`Entity with id ${id} not found`);
+    }
+    const mergedEntity = this.entity.merge(existingEntity, data);
+
+    return await this.entity.save(mergedEntity);
   }
 
   public async delete(id: string): Promise<DeleteResult> {

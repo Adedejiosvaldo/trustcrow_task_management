@@ -15,6 +15,6 @@ export interface BaseInterfaceRepository<T> {
   findWithRelations(options: FindManyOptions<T>): Promise<T[]>;
   findOneWithCondition(filterConditions: FindOneOptions<T>): Promise<T>;
 
-  update(id: string, data: Partial<T>): Promise<T | null>;
+  update(id: string, data: DeepPartial<T>): Promise<T | null>;
   delete(id: string): Promise<DeleteResult>;
 }
